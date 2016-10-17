@@ -1,0 +1,14 @@
+{
+  "name": "fc00rc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fc00"
+  ],
+  "author": "ansuz",
+  "license": "ISC"
+}
