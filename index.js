@@ -3,6 +3,8 @@ var path = require("path");
 
 var fcrc = {};
 
+var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
+
 var rcPath = fcrc.path = path.join(process.env.HOME, '.fc00rc');
 
 var defaultRc = fcrc.defaultRc = {
