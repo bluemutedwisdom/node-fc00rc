@@ -16,6 +16,15 @@ var write = fcrc.write = function (rc) {
     return;
 };
 
+var exists = fcrc.exists = function () {
+    try {
+        fs.readFileSync(fcrc.path);
+        return true;
+    } catch (err) {
+        return false;
+    }
+};
+
 // read the rc from file if exists, else make and return the default
 var read = fcrc.read = function () {
     var rc;
