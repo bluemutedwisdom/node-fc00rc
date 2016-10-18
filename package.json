@@ -1,6 +1,6 @@
 {
   "name": "fc00rc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fc00/fc00rc"
+    "url": "git+https://github.com/fc00/node-fc00rc"
   },
   "keywords": [
     "fc00"
   ],
   "author": "ansuz",
-  "license": "ISC"
+  "license": "AGPL-3.0"
 }
