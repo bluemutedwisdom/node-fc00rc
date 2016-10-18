@@ -43,10 +43,12 @@ var read = fcrc.read = function () {
         }
     }
 
-    try {
-        rc = JSON.parse(rc);
-    } catch (err) {
-        throw new Error("Couldn't parse " + rcPath);
+    if (typeof(rc) === 'string') {
+        try {
+            rc = JSON.parse(rc);
+        } catch (err) {
+            throw new Error("Couldn't parse " + rcPath);
+        }
     }
 
     return rc;
