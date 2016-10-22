@@ -1,14 +1,36 @@
 var fs = require("fs");
 var path = require("path");
+var Package = require("./package.json");
 
 var fcrc = {};
 
 var clone = function (o) { return JSON.parse(JSON.stringify(o)); };
 
-var rcPath = fcrc.path = path.join(process.env.HOME, '.fc00rc');
+var dirPath = path.join(process.env.HOME, '.fc00');
+
+var rcPath = fcrc.path = path.join(dirPath, 'config');
+
+var isDir = function (p) {
+    if (fs.existsSync(p)) {
+        if (fs.statSync(p).isDirectory()) {
+            return true;
+        }
+        return false;
+    }
+    return null;
+};
+
+var exists = fcrc.exists = function (p) {
+    try {
+        fs.readFileSync(p || fcrc.path);
+        return true;
+    } catch (err) {
+        return false;
+    }
+};
 
 var defaultRc = fcrc.defaultRc = {
-    version: 1,
+    version: Package.version,
 };
 
 // write rc to path
@@ -18,13 +40,54 @@ var write = fcrc.write = function (rc) {
     return;
 };
 
-var exists = fcrc.exists = function () {
+var profile = fcrc.profile = {};
+
+profile.path = function (name) {
+    return path.join(dirPath, 'profiles', name);
+};
+
+profile.exists = function (name) {
+    return exists(profile.path(name));
+};
+
+profile.write = function (name, content) {
+    fs.writeFileSync(profile.path(name), JSON.stringify(content, null, 4));
+};
+
+profile.read = function (name) {
     try {
-        fs.readFileSync(fcrc.path);
-        return true;
+        return fs.readFileSync(profile.path(name), 'utf-8');
     } catch (err) {
-        return false;
+        console.error(err);
+        return;
     }
+};
+
+var init = fcrc.init = function (opt, _profile) {
+    // make sure required directories exist
+    [   dirPath,
+        path.join(dirPath, 'profiles'),
+    ].forEach(function (p) {
+        if (!isDir(p)) { fs.mkdirSync(p); }
+    });
+
+    var rc = clone(defaultRc);
+
+    if (typeof(_profile) === 'object') {
+        // make a default profile
+        profile.write('default', _profile);
+        rc.profile = 'default';
+    }
+
+
+    if (typeof(opt) === 'object') {
+        Object.keys(opt).forEach(function (k) {
+            rc[k] = clone(opt[k]);
+        });
+    }
+
+    // write a basic config
+    write(rc);
 };
 
 // read the rc from file if exists, else make and return the default
@@ -34,9 +97,9 @@ var read = fcrc.read = function () {
         rc = fs.readFileSync(rcPath,'utf-8');
     } catch (err) {
         if (err.code === 'ENOENT') {
-            // rc file doesn't exist
-            write(defaultRc);
-            rc = clone(defaultRc);
+            console.error("fc00 is not initialized!");
+            console.error("try running `fc00 init`");
+            return null;
         } else {
             console.log(err);
             throw err;
