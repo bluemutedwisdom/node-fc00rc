@@ -40,28 +40,29 @@ var write = fcrc.write = function (rc) {
     return;
 };
 
-var profile = fcrc.profile = {};
-
-profile.path = function (name) {
-    return path.join(dirPath, 'profiles', name);
-};
-
-profile.exists = function (name) {
-    return exists(profile.path(name));
-};
-
-profile.write = function (name, content) {
-    fs.writeFileSync(profile.path(name), JSON.stringify(content, null, 4));
-};
-
-profile.read = function (name) {
-    try {
-        return fs.readFileSync(profile.path(name), 'utf-8');
-    } catch (err) {
-        console.error(err);
-        return;
-    }
-};
+[{
+    type: 'profile',
+    path: 'profiles',
+},{
+    type: 'peer',
+    path: 'peers',
+}].forEach(function (o) {
+    var O = fcrc[o.type] = {
+        path: function (name) { return path.join(dirPath, o.path, name); },
+        exists: function (name) { return exists(O.path(name)); },
+        write: function (name, content) {
+            fs.writeFileSync(O.path(name), JSON.stringify(content, null, 4));
+        },
+        read: function (name) {
+            try {
+                return fs.readFileSync(O.path(name), 'utf-8');
+            } catch (err) {
+                console.error(err);
+                return;
+            }
+        },
+    };
+});
 
 var init = fcrc.init = function (opt, _profile) {
     // make sure required directories exist
@@ -79,7 +80,6 @@ var init = fcrc.init = function (opt, _profile) {
         profile.write('default', _profile);
         rc.profile = 'default';
     }
-
 
     if (typeof(opt) === 'object') {
         Object.keys(opt).forEach(function (k) {
