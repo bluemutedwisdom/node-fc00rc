@@ -67,6 +67,7 @@ var init = fcrc.init = function (opt, _profile) {
     // make sure required directories exist
     [   dirPath,
         path.join(dirPath, 'profiles'),
+        path.join(dirPath, 'peers'),
     ].forEach(function (p) {
         if (!isDir(p)) { fs.mkdirSync(p); }
     });
